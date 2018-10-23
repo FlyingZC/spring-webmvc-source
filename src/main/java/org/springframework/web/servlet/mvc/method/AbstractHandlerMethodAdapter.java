@@ -65,7 +65,7 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 	 */
 	@Override
 	public final boolean supports(Object handler) {
-		return (handler instanceof HandlerMethod && supportsInternal((HandlerMethod) handler));
+		return (handler instanceof HandlerMethod && supportsInternal((HandlerMethod) handler));// handler必须是HandlerMethod类型
 	}
 
 	/**

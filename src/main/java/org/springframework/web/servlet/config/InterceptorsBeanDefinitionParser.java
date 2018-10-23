@@ -31,7 +31,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.springframework.web.servlet.handler.MappedInterceptor;
 
-/**
+/** 解析xml配置的interceptors
  * {@link org.springframework.beans.factory.xml.BeanDefinitionParser} that parses a
  * {@code interceptors} element to register a set of {@link MappedInterceptor} definitions.
  *
@@ -49,20 +49,20 @@ class InterceptorsBeanDefinitionParser implements BeanDefinitionParser {
 		if (element.hasAttribute("path-matcher")) {
 			pathMatcherRef = new RuntimeBeanReference(element.getAttribute("path-matcher"));
 		}
-
+		// 取得 <mvc:interceptors> 的子元素 ，即 <mvc:interceptor>
 		List<Element> interceptors = DomUtils.getChildElementsByTagName(element, "bean", "ref", "interceptor");
-		for (Element interceptor : interceptors) {
-			RootBeanDefinition mappedInterceptorDef = new RootBeanDefinition(MappedInterceptor.class);
+		for (Element interceptor : interceptors) {// 遍历所有的 <mvc:interceptor>，即拦截器
+			RootBeanDefinition mappedInterceptorDef = new RootBeanDefinition(MappedInterceptor.class);// 将拦截器统一注册成 MappedInterceptor 类型
 			mappedInterceptorDef.setSource(parserContext.extractSource(interceptor));
 			mappedInterceptorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
-			ManagedList<String> includePatterns = null;
-			ManagedList<String> excludePatterns = null;
+			ManagedList<String> includePatterns = null; // 对应 <mvc:mapping />
+			ManagedList<String> excludePatterns = null;// 对应 <mvc:exclude-mapping />
 			Object interceptorBean;
 			if ("interceptor".equals(interceptor.getLocalName())) {
 				includePatterns = getIncludePatterns(interceptor, "mapping");
 				excludePatterns = getIncludePatterns(interceptor, "exclude-mapping");
-				Element beanElem = DomUtils.getChildElementsByTagName(interceptor, "bean", "ref").get(0);
+				Element beanElem = DomUtils.getChildElementsByTagName(interceptor, "bean", "ref").get(0); // 取得 <mvc:interceptor> 的子元素 <bean /> 的信息
 				interceptorBean = parserContext.getDelegate().parsePropertySubElement(beanElem, null);
 			}
 			else {
@@ -75,7 +75,7 @@ class InterceptorsBeanDefinitionParser implements BeanDefinitionParser {
 			if (pathMatcherRef != null) {
 				mappedInterceptorDef.getPropertyValues().add("pathMatcher", pathMatcherRef);
 			}
-
+			// 注册到 IOC 容器
 			String beanName = parserContext.getReaderContext().registerWithGeneratedName(mappedInterceptorDef);
 			parserContext.registerComponent(new BeanComponentDefinition(mappedInterceptorDef, beanName));
 		}

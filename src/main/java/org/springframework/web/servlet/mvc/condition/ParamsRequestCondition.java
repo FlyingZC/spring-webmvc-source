@@ -34,7 +34,7 @@ import org.springframework.web.util.WebUtils;
  * @since 3.1
  */
 public final class ParamsRequestCondition extends AbstractRequestCondition<ParamsRequestCondition> {
-
+    /**保存解析出来的param匹配条件*/
 	private final Set<ParamExpression> expressions;
 
 
@@ -80,7 +80,7 @@ public final class ParamsRequestCondition extends AbstractRequestCondition<Param
 		return " && ";
 	}
 
-	/**
+	/** 直接把expression拼接到一个集合里就行:
 	 * Returns a new instance with the union of the param expressions
 	 * from "this" and the "other" instance.
 	 */
@@ -91,7 +91,7 @@ public final class ParamsRequestCondition extends AbstractRequestCondition<Param
 		return new ParamsRequestCondition(set);
 	}
 
-	/**
+	/** 只要有一个不符合就判定条件不匹配
 	 * Returns "this" instance if the request matches all param expressions;
 	 * or {@code null} otherwise.
 	 */
@@ -122,7 +122,7 @@ public final class ParamsRequestCondition extends AbstractRequestCondition<Param
 	}
 
 
-	/**
+	/** 使用ParamExpression保存param参数,这样可以任意多个
 	 * Parses and matches a single param expression to a request.
 	 */
 	static class ParamExpression extends AbstractNameValueExpression<String> {

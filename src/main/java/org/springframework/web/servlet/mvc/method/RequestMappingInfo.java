@@ -28,7 +28,7 @@ import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.condition.RequestConditionHolder;
 import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 
-/**
+/** 该类包含了 @ReuestMaping 的所有注解内容，包括 value，method，param，header，consumes，produces 等属性定义的内容 。
  * Encapsulates the following request mapping conditions:
  * <ol>
  * 	<li>{@link PatternsRequestCondition}
@@ -47,9 +47,9 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 public final class RequestMappingInfo implements RequestCondition<RequestMappingInfo> {
 
 	private final String name;
-
+	// 包含了注解属性 value 的内容，如 "/hello"
 	private final PatternsRequestCondition patternsCondition;
-
+	// 包含了注解属性 method 的内容，如 GET
 	private final RequestMethodsRequestCondition methodsCondition;
 
 	private final ParamsRequestCondition paramsCondition;
@@ -226,7 +226,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	}
 
 
-	/**
+	/** 排了个不同RequestCondition的优先级
 	 * Compares "this" info (i.e. the current instance) with another info in the context of a request.
 	 * <p>Note: It is assumed both instances have been obtained via
 	 * {@link #getMatchingCondition(HttpServletRequest)} to ensure they have conditions with

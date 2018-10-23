@@ -119,20 +119,20 @@ public abstract class HttpServletBean extends HttpServlet
 		}
 
 		// Set bean properties from init parameters.
-		try {
+		try {// 将Servlet中配置的参数封装到pvs变量中,requiredProperties为必需参数,若没配置则报异常. PropertyValues的propertyValueList属性中包含init-param的配置(如contextConfigLocation)
 			PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
-			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
-			ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
-			bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
-			initBeanWrapper(bw);
-			bw.setPropertyValues(pvs, true);
+			BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);// 使用BeanWrapper包装DispatcherServlet. BeanWrapper封装了bean的行为,提供了设置和获取属性值,实现类为BeanWrapperImpl.此处BeanWrapper是对DispatcherServlet的一层封装.使用PropertyAccessorFactory 将对象封装成BeanWrapper对象,这样就可以使用BeanWrapper对此对象(此处为this即DispatcherServlet对象)的属性进行操作了.即可通过spring提供的注入功能对属性进行注入.这些属性如contextAttribute,contextClass,nameSpace,contextConfigLocation等,都可以在web.xml中以初始化参数的方式配置在servlet的声明中
+			ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());// ResourceLoader接口仅有一个getResource(String location)的方法,可以根据一个资源地址加载文件资源.
+			bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));// 注册自定义属性编辑器,一旦遇到Resource类型的属性,都会使用ResourceEditor进行解析
+			initBeanWrapper(bw);// 模板方法,子类做一些初始化工作.bw代表DispatcherServlet
+			bw.setPropertyValues(pvs, true);// 将配置的初始化值(如contextConfigLocation)设置到DispatcherServlet中
 		}
 		catch (BeansException ex) {
 			logger.error("Failed to set bean properties on servlet '" + getServletName() + "'", ex);
 			throw ex;
 		}
 
-		// Let subclasses do whatever initialization they like.
+		// Let subclasses do whatever initialization they like.子类初始化方法入口
 		initServletBean();
 
 		if (logger.isDebugEnabled()) {
@@ -232,13 +232,13 @@ public abstract class HttpServletBean extends HttpServlet
 			throws ServletException {
 
 			Set<String> missingProps = (requiredProperties != null && !requiredProperties.isEmpty()) ?
-					new HashSet<String>(requiredProperties) : null;
+					new HashSet<String>(requiredProperties) : null;// 取null
 
-			Enumeration<String> en = config.getInitParameterNames();
-			while (en.hasMoreElements()) {
-				String property = en.nextElement();
-				Object value = config.getInitParameter(property);
-				addPropertyValue(new PropertyValue(property, value));
+			Enumeration<String> en = config.getInitParameterNames();//config为StandardWrapperFacade对象
+			while (en.hasMoreElements()) {// 遍历并获取init-param的param-name和param-value值
+				String property = en.nextElement();// 比如配置的contextConfigLocation等都会在此处设置到servlet中
+				Object value = config.getInitParameter(property);// config是StandardWrapperFacade实例.
+				addPropertyValue(new PropertyValue(property, value));// 设置配置参数到PropertyValue
 				if (missingProps != null) {
 					missingProps.remove(property);
 				}

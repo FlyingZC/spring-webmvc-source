@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface RequestToViewNameTranslator {
 
-	/**
+	/** 通过request获取viewName
 	 * Translate the given {@link HttpServletRequest} into a view name.
 	 * @param request the incoming {@link HttpServletRequest} providing
 	 * the context from which a view name is to be resolved

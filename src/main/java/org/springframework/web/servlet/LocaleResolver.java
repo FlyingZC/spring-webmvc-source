@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface LocaleResolver {
 
-	/**
+	/** 从request中解析出Locale
 	 * Resolve the current locale via the given request. Can return a default locale as
 	 * fallback in any case.
 	 * @param request the request to resolve the locale for
@@ -58,7 +58,7 @@ public interface LocaleResolver {
 	 */
 	Locale resolveLocale(HttpServletRequest request);
 
-	/**
+	/** 将特定的Locale设置给某个request
 	 * Set the current locale to the given one.
 	 * @param request the request to be used for locale modification
 	 * @param response the response to be used for locale modification

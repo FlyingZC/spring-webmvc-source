@@ -35,7 +35,7 @@ import java.util.Locale;
  */
 public interface ViewResolver {
 
-	/**
+	/** 根据传入的视图名(或者加上locale)找到对应的视图
 	 * Resolve the given view by name.
 	 * <p>Note: To allow for ViewResolver chaining, a ViewResolver should
 	 * return {@code null} if a view with the given name is not defined in it.

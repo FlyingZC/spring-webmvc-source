@@ -28,11 +28,11 @@ import javax.servlet.http.HttpServletRequest;
  * @since 3.1
  */
 abstract class AbstractNameValueExpression<T> implements NameValueExpression<T> {
-
+    // 参数的名字
 	protected final String name;
-
+	// 参数的值
 	protected final T value;
-
+	// 参数的匹配规则,是= 还是!=
 	protected final boolean isNegated;
 
 	AbstractNameValueExpression(String expression) {

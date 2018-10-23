@@ -266,21 +266,21 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 			HttpServletRequest request, HttpServletResponse response, int cacheSeconds, boolean lastModified)
 			throws ServletException {
 
-		// Check whether we should support the request method.
+		// Check whether we should support the request method. 根据supportedMethods属性对request类型是否支持进行判断.
 		String method = request.getMethod();
-		if (this.supportedMethods != null && !this.supportedMethods.contains(method)) {
+		if (this.supportedMethods != null && !this.supportedMethods.contains(method)) {// supported-Methods属性用来保存所有支持的request类型,如果为空则不检查， 否则用它检查是否支持当前请求的类型
 			throw new HttpRequestMethodNotSupportedException(
 					method, StringUtils.toStringArray(this.supportedMethods));
 		}
 
 		// Check whether a session is required.
-		if (this.requireSession) {
+		if (this.requireSession) {// 如果requireSession为true， 则通过request.getSession（ false） 检查session是否存在
 			if (request.getSession(false) == null) {
 				throw new HttpSessionRequiredException("Pre-existing session required but none found");
 			}
 		}
 
-		// Do declarative cache control.
+		// Do declarative cache control. 给response设置缓存过期时间
 		// Revalidate if the controller supports last-modified.
 		applyCacheSeconds(response, cacheSeconds, lastModified);
 	}
@@ -370,10 +370,10 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	 */
 	protected final void applyCacheSeconds(HttpServletResponse response, int seconds, boolean mustRevalidate) {
 		if (seconds > 0) {
-			cacheForSeconds(response, seconds, mustRevalidate);
+			cacheForSeconds(response, seconds, mustRevalidate);// 给缓存设置过期时间,其实就是对Response的Header进行了相应的设置。
 		}
 		else if (seconds == 0) {
-			preventCaching(response);
+			preventCaching(response);// 阻止使用缓存
 		}
 		// Leave caching to the client otherwise.
 	}

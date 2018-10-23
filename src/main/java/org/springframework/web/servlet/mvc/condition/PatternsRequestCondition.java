@@ -202,12 +202,12 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 	@Override
 	public PatternsRequestCondition getMatchingCondition(HttpServletRequest request) {
 
-		if (this.patterns.isEmpty()) {
+		if (this.patterns.isEmpty()) {// 如/common/hello.do
 			return this;
 		}
 
 		String lookupPath = this.pathHelper.getLookupPathForRequest(request);
-		List<String> matches = getMatchingPatterns(lookupPath);
+		List<String> matches = getMatchingPatterns(lookupPath);// 如[/common/hello.do]
 
 		return matches.isEmpty() ? null :
 			new PatternsRequestCondition(matches, this.pathHelper, this.pathMatcher, this.useSuffixPatternMatch,

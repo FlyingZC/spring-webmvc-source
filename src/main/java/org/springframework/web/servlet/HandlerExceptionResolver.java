@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface HandlerExceptionResolver {
 
-	/**
+	/** 从异常解析出ModelAndView
 	 * Try to resolve the given exception that got thrown during on handler execution,
 	 * returning a ModelAndView that represents a specific error page if appropriate.
 	 * <p>The returned ModelAndView may be {@linkplain ModelAndView#isEmpty() empty}

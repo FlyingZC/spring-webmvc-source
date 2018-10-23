@@ -18,7 +18,7 @@ package org.springframework.web.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
+/** 根据request找到对应的处理器Handler和Interceptors
  * Interface to be implemented by objects that define a mapping between
  * requests and handler objects.
  *

@@ -39,7 +39,7 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
-/**
+/** 用于注解@Controller,@RequestMapping来定义controller.
  * Creates {@link RequestMappingInfo} instances from type and method-level
  * {@link RequestMapping @RequestMapping} annotations in
  * {@link Controller @Controller} classes.
@@ -164,7 +164,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 
-	/**
+	/** 用isHandler()根据规则筛选出Handler,保存到Map,筛选逻辑是检查类前是否有@Controller或@RequestMapping注解
 	 * {@inheritDoc}
 	 * Expects a handler to have a type-level @{@link Controller} annotation.
 	 */
@@ -174,7 +174,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 				(AnnotationUtils.findAnnotation(beanType, RequestMapping.class) != null));
 	}
 
-	/**
+	/** 找到HandlerMethod.根据@RequestMapping注解来匹配条件,若没有@RequestMapping注解返回null,若有则创建RequestMappingInfo类型的匹配条件并返回
 	 * Uses method and type-level @{@link RequestMapping} annotations to create
 	 * the RequestMappingInfo.
 	 * @return the created RequestMappingInfo, or {@code null} if the method

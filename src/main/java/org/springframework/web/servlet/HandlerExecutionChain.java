@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-/**
+/** 处理器链.包含一个处理器,即HandlerMethod 和 多个拦截器,即HandlerInterceptor
  * Handler execution chain, consisting of handler object and any handler interceptors.
  * Returned by HandlerMapping's {@link HandlerMapping#getHandler} method.
  *
@@ -64,11 +64,11 @@ public class HandlerExecutionChain {
 	 * (in the given order) before the handler itself executes
 	 */
 	public HandlerExecutionChain(Object handler, HandlerInterceptor... interceptors) {
-		if (handler instanceof HandlerExecutionChain) {
+		if (handler instanceof HandlerExecutionChain) {// 判断处理器类型
 			HandlerExecutionChain originalChain = (HandlerExecutionChain) handler;
-			this.handler = originalChain.getHandler();
+			this.handler = originalChain.getHandler();// 若是 HandlerExecutionChain,则需要取得真正的处理器 
 			this.interceptorList = new ArrayList<HandlerInterceptor>();
-			CollectionUtils.mergeArrayIntoCollection(originalChain.getInterceptors(), this.interceptorList);
+			CollectionUtils.mergeArrayIntoCollection(originalChain.getInterceptors(), this.interceptorList);// 将 HandlerExecutionChain 本身的拦截器和入参的拦截器都合并到集合
 			CollectionUtils.mergeArrayIntoCollection(interceptors, this.interceptorList);
 		}
 		else {
@@ -128,14 +128,14 @@ public class HandlerExecutionChain {
 	 */
 	boolean applyPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HandlerInterceptor[] interceptors = getInterceptors();
-		if (!ObjectUtils.isEmpty(interceptors)) {
+		if (!ObjectUtils.isEmpty(interceptors)) {  // 按照拦截器定义的顺序依次执行
 			for (int i = 0; i < interceptors.length; i++) {
 				HandlerInterceptor interceptor = interceptors[i];
-				if (!interceptor.preHandle(request, response, this.handler)) {
-					triggerAfterCompletion(request, response, null);
+				if (!interceptor.preHandle(request, response, this.handler)) { // 执行 preHandle 方法
+					triggerAfterCompletion(request, response, null);// 一旦存在返回 false，触发该方法【逆序】执行【前面所有拦截器】的 afterCompletion 方法
 					return false;
 				}
-				this.interceptorIndex = i;
+				this.interceptorIndex = i;// 关键 --> 只有在 preHandle()返回 true 时才执行,在 triggerAfterCompletion()中会用到
 			}
 		}
 		return true;
@@ -164,7 +164,7 @@ public class HandlerExecutionChain {
 
 		HandlerInterceptor[] interceptors = getInterceptors();
 		if (!ObjectUtils.isEmpty(interceptors)) {
-			for (int i = this.interceptorIndex; i >= 0; i--) {
+			for (int i = this.interceptorIndex; i >= 0; i--) {// 关键 -> 逆序执行
 				HandlerInterceptor interceptor = interceptors[i];
 				try {
 					interceptor.afterCompletion(request, response, this.handler, ex);
