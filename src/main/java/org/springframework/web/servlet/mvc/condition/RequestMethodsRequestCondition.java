@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 
-/**
+/** requestMethods对应 http method,如GET,POST,PUT,DELETE等
  * A logical disjunction (' || ') request condition that matches a request
  * against a set of {@link RequestMethod}s.
  *

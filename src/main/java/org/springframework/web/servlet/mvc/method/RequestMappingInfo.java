@@ -28,7 +28,7 @@ import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.condition.RequestConditionHolder;
 import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 
-/** 该类包含了 @ReuestMaping 的所有注解内容，包括 value，method，param，header，consumes，produces 等属性定义的内容 。
+/** 该类包含了 @RequestMaping 的所有注解内容，包括 value，method，param，header，consumes，produces 等属性定义的内容
  * Encapsulates the following request mapping conditions:
  * <ol>
  * 	<li>{@link PatternsRequestCondition}
@@ -47,9 +47,9 @@ import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondit
 public final class RequestMappingInfo implements RequestCondition<RequestMappingInfo> {
 
 	private final String name;
-	// 包含了注解属性 value 的内容，如 "/hello"
+	// 包含了@RequestMapping注解属性 value 的内容, 如 "/hello"
 	private final PatternsRequestCondition patternsCondition;
-	// 包含了注解属性 method 的内容，如 GET
+	// 包含了@RequestMapping注解属性 method 的内容, 如 GET
 	private final RequestMethodsRequestCondition methodsCondition;
 
 	private final ParamsRequestCondition paramsCondition;
@@ -59,7 +59,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	private final ConsumesRequestCondition consumesCondition;
 
 	private final ProducesRequestCondition producesCondition;
-
+	// 用于不知道具体是RequestCondition哪个子类时.自定义的条件,使用的这个属性进行封装
 	private final RequestConditionHolder customConditionHolder;
 
 
@@ -159,15 +159,15 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	}
 
 
-	/**
+	/** 组合过滤条件对象(xxxCondition). 作用是把两个同类过滤器的过滤条件列表组合起来. 比如@RequestMapping注解同时存在于类和方法上的场景,需要把过滤条件组合起来,通常就是取过滤条件的合集
 	 * Combines "this" request mapping info (i.e. the current instance) with another request mapping info instance.
 	 * <p>Example: combine type- and method-level request mappings.
 	 * @return a new request mapping info instance; never {@code null}
 	 */
 	@Override
 	public RequestMappingInfo combine(RequestMappingInfo other) {
-		String name = combineNames(other);
-		PatternsRequestCondition patterns = this.patternsCondition.combine(other.patternsCondition);
+		String name = combineNames(other);// 合并@RequestMapping的name属性值
+		PatternsRequestCondition patterns = this.patternsCondition.combine(other.patternsCondition);// 合并@RequestMapping的value属性值
 		RequestMethodsRequestCondition methods = this.methodsCondition.combine(other.methodsCondition);
 		ParamsRequestCondition params = this.paramsCondition.combine(other.paramsCondition);
 		HeadersRequestCondition headers = this.headersCondition.combine(other.headersCondition);
@@ -178,7 +178,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 		return new RequestMappingInfo(name, patterns,
 				methods, params, headers, consumes, produces, custom.getCondition());
 	}
-
+	/**合并@RequestMapping的name属性值*/
 	private String combineNames(RequestMappingInfo other) {
 		if (this.name != null && other.name != null) {
 			String separator = RequestMappingInfoHandlerMethodMappingNamingStrategy.SEPARATOR;
@@ -192,7 +192,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 		}
 	}
 
-	/**
+	/** 创建 跟请求匹配的过滤条件对象
 	 * Checks if all conditions in this request mapping info match the provided request and returns
 	 * a potentially new request mapping info with conditions tailored to the current request.
 	 * <p>For example the returned instance may contain the subset of URL patterns that match to
@@ -200,14 +200,14 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	 * @return a new instance in case all conditions match; or {@code null} otherwise
 	 */
 	@Override
-	public RequestMappingInfo getMatchingCondition(HttpServletRequest request) {
+	public RequestMappingInfo getMatchingCondition(HttpServletRequest request) {// 1.遍历所有xxxCondition,调用其getMatchingCondition()看request是否满足匹配条件. 封装后返回
 		RequestMethodsRequestCondition methods = this.methodsCondition.getMatchingCondition(request);
 		ParamsRequestCondition params = this.paramsCondition.getMatchingCondition(request);
 		HeadersRequestCondition headers = this.headersCondition.getMatchingCondition(request);
 		ConsumesRequestCondition consumes = this.consumesCondition.getMatchingCondition(request);
 		ProducesRequestCondition produces = this.producesCondition.getMatchingCondition(request);
 
-		if (methods == null || params == null || headers == null || consumes == null || produces == null) {
+		if (methods == null || params == null || headers == null || consumes == null || produces == null) {// 以上所有判断方法,只要不匹配的都会返回null
 			return null;
 		}
 
@@ -220,13 +220,13 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 		if (custom == null) {
 			return null;
 		}
-
+		// 2.将上述所有xxxCondition重新封装到RequestMappingInfo中,则RequestMappingInfo就能看到哪几个xxxCondition能匹配上请求
 		return new RequestMappingInfo(this.name, patterns,
 				methods, params, headers, consumes, produces, custom.getCondition());
 	}
 
 
-	/** 排了个不同RequestCondition的优先级
+	/** 不同 RequestCondition 的优先级排序. 比如好几个处理方法都能跟request请求匹配上,就使用这个方法选出匹配度最高的处理方法
 	 * Compares "this" info (i.e. the current instance) with another info in the context of a request.
 	 * <p>Note: It is assumed both instances have been obtained via
 	 * {@link #getMatchingCondition(HttpServletRequest)} to ensure they have conditions with

@@ -32,7 +32,7 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition.HeaderExpression;
 
-/**
+/** consumes对应request的提交内容类型content type,如application/json, text/html
  * A logical disjunction (' || ') request condition to match a request's
  * 'Content-Type' header to a list of media type expressions. Two kinds of
  * media type expressions are supported, which are described in

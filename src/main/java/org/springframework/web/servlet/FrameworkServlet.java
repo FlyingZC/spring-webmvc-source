@@ -959,7 +959,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		// 通过request拿到异步处理管理器 并 设置了拦截器
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 		asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
-		// 将当前请求的LocaleContext和ServletRequestAttributeas设置到LocaleContextHolder和RequestContextHolder中
+		// 将当前请求的LocaleContext和ServletRequestAttributes设置到LocaleContextHolder和RequestContextHolder中
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {

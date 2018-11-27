@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition.HeaderExpression;
 
-/**
+/** produces指定返回的内容类型的content type, 仅当request请求头中的(Accept)类型中包含该指定类型才返回
  * A logical disjunction (' || ') request condition to match a request's 'Accept' header
  * to a list of media type expressions. Two kinds of media type expressions are
  * supported, which are described in {@link RequestMapping#produces()} and

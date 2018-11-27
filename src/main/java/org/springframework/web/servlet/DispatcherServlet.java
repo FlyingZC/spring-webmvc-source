@@ -847,7 +847,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		// Keep a snapshot of the request attributes in case of an include,
-		// to be able to restore the original attributes after the include.当include请求时 对request的Attribute做快照备份
+		// to be able to restore the original attributes after the include.当include请求时,对request的Attribute做快照备份
 		Map<String, Object> attributesSnapshot = null;
 		if (WebUtils.isIncludeRequest(request)) {
 			attributesSnapshot = new HashMap<String, Object>();
@@ -906,7 +906,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		try {
 			ModelAndView mv = null;// 封装Model和View的容器
-			Exception dispatchException = null;// 请求处理过程中抛出的异常(不包括渲染过程中国抛出的异常)
+			Exception dispatchException = null;// 请求处理过程中抛出的异常(不包括渲染过程中抛出的异常)
 
 			try {
 				processedRequest = checkMultipart(request);// 检查是不是上传请求 (其中使用到了MultipartResolver)
@@ -1060,7 +1060,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @see MultipartResolver#resolveMultipart
 	 */
 	protected HttpServletRequest checkMultipart(HttpServletRequest request) throws MultipartException {
-		if (this.multipartResolver != null && this.multipartResolver.isMultipart(request)) {
+		if (this.multipartResolver != null && this.multipartResolver.isMultipart(request)) {// post请求 且 contentType以multipart/开头
 			if (WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class) != null) {
 				logger.debug("Request is already a MultipartHttpServletRequest - if not in a forward, " +
 						"this typically results from an additional MultipartFilter in web.xml");
@@ -1096,12 +1096,12 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @return the HandlerExecutionChain, or {@code null} if no handler could be found
 	 */
 	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-		for (HandlerMapping hm : this.handlerMappings) {
+		for (HandlerMapping hm : this.handlerMappings) {// handlerMappings结构:[RequestMappingHandlerMapping, BeanNameUrlHandlerMapping]
 			if (logger.isTraceEnabled()) {
 				logger.trace(
 						"Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
 			}
-			HandlerExecutionChain handler = hm.getHandler(request);
+			HandlerExecutionChain handler = hm.getHandler(request);// 通过handlerMapping获取HandlerExecutionChain
 			if (handler != null) {
 				return handler;
 			}
@@ -1136,11 +1136,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @throws ServletException if no HandlerAdapter can be found for the handler. This is a fatal error.
 	 */
 	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
-		for (HandlerAdapter ha : this.handlerAdapters) {
+		for (HandlerAdapter ha : this.handlerAdapters) {// handlerAdapters结构:[RequestMappingHandlerAdapter, HttpRequestHandlerAdapter, SimpleControllerHandlerAdapter]
 			if (logger.isTraceEnabled()) {
 				logger.trace("Testing handler adapter [" + ha + "]");
 			}
-			if (ha.supports(handler)) {
+			if (ha.supports(handler)) {// handlerAdapter是否支持该handler.handler形如 com.zc.controller.FirstController.HelloWord()
 				return ha;
 			}
 		}

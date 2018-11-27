@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 
-/**
+/** 外观类,用于不知道具体是RequestCondition哪个子类时.自定义的条件,使用的这个进行封装
  * A holder for a {@link RequestCondition} useful when the type of the request
  * condition is not known ahead of time, e.g. custom condition. Since this
  * class is also an implementation of {@code RequestCondition}, effectively it

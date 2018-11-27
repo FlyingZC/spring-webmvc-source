@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-/**
+/** 容器, CompositeRequestCondition和RequestMappingInfo本身不带任何的匹配条件,只是用于包装其他的RequestCondition进行匹配,该类封装基础实现,具体的匹配都委托给基础实现类
  * Implements the {@link RequestCondition} contract by delegating to multiple
  * {@code RequestCondition} types and using a logical conjunction (' && ') to
  * ensure all conditions match a given request.

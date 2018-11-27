@@ -32,7 +32,7 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UrlPathHelper;
 
-/**
+/** Patterns对应url,就是@RequestMapping(value="xx")注解value中的配置
  * A logical disjunction (' || ') request condition that matches a request
  * against a set of URL path patterns.
  *
@@ -161,7 +161,7 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 	 * </ul>
 	 */
 	@Override
-	public PatternsRequestCondition combine(PatternsRequestCondition other) {
+	public PatternsRequestCondition combine(PatternsRequestCondition other) {// 例如,拼接/First和/HelloWorld
 		Set<String> result = new LinkedHashSet<String>();
 		if (!this.patterns.isEmpty() && !other.patterns.isEmpty()) {
 			for (String pattern1 : this.patterns) {

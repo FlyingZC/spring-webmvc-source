@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 public interface RequestCondition<T> {
 
-	/**拼接条件
+	/**拼接条件,将不同的筛选条件合并
 	 * Defines the rules for combining this condition (i.e. the current instance)
 	 * with another condition. For example combining type- and method-level
 	 * {@link RequestMapping} conditions.
@@ -46,7 +46,7 @@ public interface RequestCondition<T> {
 	 */
 	T combine(T other);
 
-	/**查找匹配的条件,并返回
+	/**根据request查找匹配的条件,并返回
 	 * Checks if this condition matches the given request and returns a
 	 * potentially new request condition with content tailored to the
 	 * current request. For example a condition with URL patterns might
@@ -57,7 +57,7 @@ public interface RequestCondition<T> {
 	 */
 	T getMatchingCondition(HttpServletRequest request);
 
-	/**用于排序
+	/**不同筛选条件比较,用于排序
 	 * Compares this condition to another condition in the context of
 	 * a specific request. This method assumes both instances have
 	 * been obtained via {@link #getMatchingCondition(HttpServletRequest)}

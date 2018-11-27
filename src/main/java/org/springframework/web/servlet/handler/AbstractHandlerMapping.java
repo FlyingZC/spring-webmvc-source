@@ -64,11 +64,11 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
 	private PathMatcher pathMatcher = new AntPathMatcher();
-	// 用于配置springMVC的拦截器列表
+	// 用于配置springMVC的拦截器列表(仅在1.配置时使用,2.使用extendInterceptors方法拓展). 通过initInterceptors()按类型分配到mappedInterceptors和adaptedInterceptors中
 	private final List<Object> interceptors = new ArrayList<Object>();
-	/**这种类型的interceptor在使用时需要与请求的url进行匹配*/
+	/**这种类型的interceptor在使用时需要与请求的url进行匹配,只有匹配成功才会被添加到getHander()返回值HandlerExecutionChain中. 来源1.interceptors获取;2.注册到spring中 通过detectMappedInterceptors()获取*/
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<HandlerInterceptor>();
-	/**这种类型的interceptor不需要进行匹配,在getHandle()r中会全部添加到返回值HandlerExecutionChain中,它只能从interceptors中获取*/
+	/**这种类型的interceptor不需要进行匹配,在getHandle()中会全部添加到返回值HandlerExecutionChain中, 来源:它只能从interceptors中获取*/
 	private final List<MappedInterceptor> mappedInterceptors = new ArrayList<MappedInterceptor>();
 
 
@@ -346,10 +346,10 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));// 获取或使用handler创建handlerExecutionChain,HandlerExecutionChain中包含了处理器和拦截器
-		chain.addInterceptors(getAdaptedInterceptors());// 将adaptedInterceptor加入chain中
+		chain.addInterceptors(getAdaptedInterceptors());// 1.将adaptedInterceptor加入chain中
 
 		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request);// 2.获取请求路径.若完整请求地址为 http://localhost:8080/Demo/hello，则 lookupPath = /hello
-		for (MappedInterceptor mappedInterceptor : this.mappedInterceptors) {// 3.遍历将mappedInterceptors拦截器加入chain中
+		for (MappedInterceptor mappedInterceptor : this.mappedInterceptors) {// 3.遍历将符合条件的mappedInterceptors拦截器加入chain中
 			if (mappedInterceptor.matches(lookupPath, this.pathMatcher)) {// 判断拦截器类型,属于 MappedInterceptor的则先匹配路径,否则直接添加
 				chain.addInterceptor(mappedInterceptor.getInterceptor());
 			}

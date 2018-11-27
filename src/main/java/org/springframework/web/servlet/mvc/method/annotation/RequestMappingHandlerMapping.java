@@ -185,14 +185,14 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
 		RequestMappingInfo info = null;
-		RequestMapping methodAnnotation = AnnotationUtils.findAnnotation(method, RequestMapping.class);
+		RequestMapping methodAnnotation = AnnotationUtils.findAnnotation(method, RequestMapping.class);// 找到方法上的@RequestMapping注解
 		if (methodAnnotation != null) {
 			RequestCondition<?> methodCondition = getCustomMethodCondition(method);
-			info = createRequestMappingInfo(methodAnnotation, methodCondition);
-			RequestMapping typeAnnotation = AnnotationUtils.findAnnotation(handlerType, RequestMapping.class);
+			info = createRequestMappingInfo(methodAnnotation, methodCondition);// 根据方法上的@RequestMapping注解创建RequestMappingInfo对象
+			RequestMapping typeAnnotation = AnnotationUtils.findAnnotation(handlerType, RequestMapping.class);// 找到bean上声明的@RequestMapping注解
 			if (typeAnnotation != null) {
 				RequestCondition<?> typeCondition = getCustomTypeCondition(handlerType);
-				info = createRequestMappingInfo(typeAnnotation, typeCondition).combine(info);
+				info = createRequestMappingInfo(typeAnnotation, typeCondition).combine(info);// 根据bean上的@RequestMapping注解创建RequestMappingInfo对象,再combine()与 方法上的RequestMappingInfo合并
 			}
 		}
 		return info;
@@ -228,11 +228,11 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 		return null;
 	}
 
-	/**
+	/** 根据@RequestMapping注解 创建RequestMappingInfo对象
 	 * Created a RequestMappingInfo from a RequestMapping annotation.
 	 */
 	protected RequestMappingInfo createRequestMappingInfo(RequestMapping annotation, RequestCondition<?> customCondition) {
-		String[] patterns = resolveEmbeddedValuesInPatterns(annotation.value());
+		String[] patterns = resolveEmbeddedValuesInPatterns(annotation.value());// 处理注解的value属性
 		return new RequestMappingInfo(
 				annotation.name(),
 				new PatternsRequestCondition(patterns, getUrlPathHelper(), getPathMatcher(),

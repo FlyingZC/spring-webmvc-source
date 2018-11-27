@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.WebUtils;
 
-/**
+/** params 对应http request parameter
  * A logical conjunction (' && ') request condition that matches a request against
  * a set parameter expressions with syntax defined in {@link RequestMapping#params()}.
  *
@@ -80,7 +80,7 @@ public final class ParamsRequestCondition extends AbstractRequestCondition<Param
 		return " && ";
 	}
 
-	/** 直接把expression拼接到一个集合里就行:
+	/** 直接把expression拼接到一个集合里就行
 	 * Returns a new instance with the union of the param expressions
 	 * from "this" and the "other" instance.
 	 */

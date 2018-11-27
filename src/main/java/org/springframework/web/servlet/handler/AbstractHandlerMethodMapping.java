@@ -73,7 +73,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	private HandlerMethodMappingNamingStrategy<T> namingStrategy;
 
-	/**保存匹配条件(即RequestCondition) 与 HandlerMethod的关系*/
+	/**保存匹配条件(即RequestCondition,正常放的是它的子类RequestMappingInfo) 与 HandlerMethod的关系*/
 	private final Map<T, HandlerMethod> handlerMethods = new LinkedHashMap<T, HandlerMethod>();
 	/**保存url 与 匹配条件(即RequestCondition)的关系. MultiValueMap类型是一个value为List类型的Map*/
 	private final MultiValueMap<String, T> urlMap = new LinkedMultiValueMap<String, T>();
@@ -163,16 +163,16 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	protected void detectHandlerMethods(final Object handler) {
 		Class<?> handlerType =
-				(handler instanceof String ? getApplicationContext().getType((String) handler) : handler.getClass());// 获取Handler的类型
+				(handler instanceof String ? getApplicationContext().getType((String) handler) : handler.getClass());// 获取Handler的类型. 如com.zc.controller.FirstController
 
-		// Avoid repeated calls to getMappingForMethod which would rebuild RequestMappingInfo instances. 保存Handler于 匹配条件的 对应关系,用于给registerHandlerMethod传入匹配条件.这里T是 类型
+		// Avoid repeated calls to getMappingForMethod which would rebuild RequestMappingInfo instances. 保存Handler(如com.zc.controller.FirstController.HelloWord()) 与 匹配条件(RequestMappingInfo)的 对应关系,用于给registerHandlerMethod传入匹配条件.这里T是 RequestMappingInfo类型
 		final Map<Method, T> mappings = new IdentityHashMap<Method, T>();
 		final Class<?> userType = ClassUtils.getUserClass(handlerType);// 若是cglib代理的子对象类型,则返回父类型,否则直接返回传入的类型
 		// 获取当前bean里所有符合handler要求的method
 		Set<Method> methods = HandlerMethodSelector.selectMethods(userType, new MethodFilter() {// selectMethods()遍历传入的Handler的所有方法,然后根据第二个MethodFilter类型的参数筛选出合适的方法
 			@Override
 			public boolean matches(Method method) {// 匹配符合条件的Method
-				T mapping = getMappingForMethod(method, userType);// 模板方法
+				T mapping = getMappingForMethod(method, userType);// 模板方法,组装出最终可用于处理请求的RequestMappingInfo对象
 				if (mapping != null) {
 					mappings.put(method, mapping);// 方法,映射
 					return true;
@@ -207,7 +207,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * under the same mapping
 	 */
 	protected void registerHandlerMethod(Object handler, Method method, T mapping) {
-		HandlerMethod newHandlerMethod = createHandlerMethod(handler, method);
+		HandlerMethod newHandlerMethod = createHandlerMethod(handler, method);// 根据handler(如firstController) 和 method(如helloWorld()方法) 创建 HandlerMethod
 		HandlerMethod oldHandlerMethod = this.handlerMethods.get(mapping);
 		if (oldHandlerMethod != null && !oldHandlerMethod.equals(newHandlerMethod)) {// 检查是否已经在handlerMethods中存在,若已经存在且和现在传入的不同则抛异常
 			throw new IllegalStateException("Ambiguous mapping found. Cannot map '" + newHandlerMethod.getBean() +
@@ -220,7 +220,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			logger.info("Mapped \"" + mapping + "\" onto " + newHandlerMethod);
 		}
 		// 添加到urlMap
-		Set<String> patterns = getMappingPathPatterns(mapping);
+		Set<String> patterns = getMappingPathPatterns(mapping);// patterns里放的如/first/hello
 		for (String pattern : patterns) {
 			if (!getPathMatcher().isPattern(pattern)) {
 				this.urlMap.add(pattern, mapping);
@@ -296,7 +296,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up handler method for path " + lookupPath);
 		}
-		HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);// 2.根据路径寻找 处理方法. 通过lookupPath和request找到handlerMethod
+		HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);// 2.根据路径寻找 处理方法(HandlerMethod). 通过lookupPath和request找到handlerMethod
 		if (logger.isDebugEnabled()) {
 			if (handlerMethod != null) {
 				logger.debug("Returning handler method [" + handlerMethod + "]");
@@ -319,9 +319,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
 		List<Match> matches = new ArrayList<Match>();// Match是内部类,保存匹配条件和Handler
-		List<T> directPathMatches = this.urlMap.get(lookupPath);// 先根据lookupPath获取到 匹配条件
-		if (directPathMatches != null) {// 将找到的匹配条件添加到matches
-			addMatchingMappings(directPathMatches, matches, request);
+		List<T> directPathMatches = this.urlMap.get(lookupPath);// 先根据lookupPath获取到 匹配条件(RequestMappingInfo). 其中urlMap在初始化时已经保存了url与RequestMappingInfo的映射
+		if (directPathMatches != null) {
+			addMatchingMappings(directPathMatches, matches, request);// 将找到的匹配条件通过addMatchingMappings()判断,若有能力处理该request,则添加到matches
 		}
 		if (matches.isEmpty()) {// 若不能直接使用lookupPath得到匹配条件,则将所有匹配条件加入matches
 			// No choice but to go through all mappings...
