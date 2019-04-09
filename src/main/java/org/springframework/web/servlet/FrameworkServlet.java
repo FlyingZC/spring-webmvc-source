@@ -826,7 +826,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	}
 
 
-	/**
+	/** 从tomcat直接到该方法,覆盖超类HttpServlet中的实现,springmvc请求的入口.用于拦截PATCH请求.
 	 * Override the parent class implementation in order to intercept PATCH
 	 * requests.
 	 */
@@ -839,7 +839,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			processRequest(request, response);
 		}
 		else {
-			super.service(request, response);
+			super.service(request, response);// 调HttpServlet.service()再次分发请求
 		}
 	}
 

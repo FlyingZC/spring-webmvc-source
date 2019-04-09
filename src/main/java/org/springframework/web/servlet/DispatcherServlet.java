@@ -1220,12 +1220,12 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
-		// Delegate to the View object for rendering.
+		// Delegate to the View object for rendering.委托View对象进行渲染
 		if (logger.isDebugEnabled()) {
 			logger.debug("Rendering view [" + view + "] in DispatcherServlet with name '" + getServletName() + "'");
 		}
 		try {
-			view.render(mv.getModelInternal(), request, response);// 渲染页面(用到ThemeResolver)
+			view.render(mv.getModelInternal(), request, response);// 使用view渲染页面(用到ThemeResolver)
 		}
 		catch (Exception ex) {
 			if (logger.isDebugEnabled()) {
